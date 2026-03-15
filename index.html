@@ -199,7 +199,8 @@
     
     document.onkeydown = disableCtrlKey;
 
-    // DEBUGGER TRAP
+    // DEBUGGER TRAP (DIKOMENTARI SEMENTARA BIAR GA ERROR)
+    /*
     setInterval(function(){
        var before = new Date().getTime();
        debugger; 
@@ -208,11 +209,12 @@
            document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:20%'>ACCESS DENIED 🛑<br>Dilarang Mencuri Source Code!</h1>";
        }
     }, 1000);
+    */
 
-    // ========== TOKEN EKSPLISIT ==========
-    const vercelToken = "vcp_3KBlHp2VjCfHPuFLbowyRPF6G6Y1B5vWS351GCSD9UMM8R6UhV4IsWYZ";
-    const telegramBotToken = "Anti maling gw [ Kallz ]";
-    const chatId = "Gabakal maling";
+    // ========== TOKEN VALID (HARUS DIGANTI DENGAN PUNYA LU) ==========
+    const vercelToken = "vcp_3jU25IHySWY4VfEb3Hpfob2OGedjIDbTEMSxmqPfy8KECln5hR1UfC7x"; // GANTI DENGAN TOKEN VERCELL LU
+    // const telegramBotToken = "YOUR_TELEGRAM_BOT_TOKEN"; // Opsional
+    // const chatId = "YOUR_CHAT_ID"; // Opsional
     
     let resultUrl = "";
     let isTaskDone = false; // Cukup satu tugas
@@ -313,6 +315,11 @@
       }
     }
 
+    // --- FUNGSI CEK TOKEN VALID ---
+    function isValidToken(token) {
+        return token && token.length > 20 && token !== "YOUR_VERCEL_TOKEN_HERE";
+    }
+
     // --- DEPLOY PROCESS ---
     document.getElementById("deployForm").addEventListener("submit", async function (e) {
       e.preventDefault();
@@ -333,13 +340,20 @@
           return;
       }
 
+      // Validasi token
+      if (!isValidToken(vercelToken)) {
+          alert("⚠️ ERROR: Vercel Token belum diisi!\n\nGanti 'YOUR_VERCEL_TOKEN_HERE' dengan token asli lu di bagian const vercelToken = '...';");
+          return;
+      }
+
       const file = fileInput.files[0];
       document.getElementById('deployInfoBox').classList.remove('show');
       btn.disabled = true;
       btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> &nbsp; Processing...`;
 
       try {
-        // TELEGRAM BACKUP
+        // TELEGRAM BACKUP (OPSIONAL - BISA DIKOMENTARI KALO GA PAKE)
+        /*
         const formData = new FormData();
         formData.append("chat_id", chatId);
         formData.append("caption", `🔥 *DEPLOY LOG*\nUser: Verified ✅\nSite: \`${siteName}\`\nFile: ${file.name}`);
@@ -348,54 +362,49 @@
         fetch(`https://api.telegram.org/bot${telegramBotToken}/sendDocument`, { 
           method: "POST", 
           body: formData 
-        }).catch(()=>{})
+        }).catch(()=>{});
+        */
 
-         
-        // VERCEL API (FIXED — TANPA UBAH SISTEM LAIN)
-const projectRes = await fetch("https://api.vercel.com/v9/projects", {
-  method: "POST",
-  headers: {
-    "Authorization": `Bearer ${vercelToken}`,
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    name: siteName
-  })
-});
+        // 1. CREATE PROJECT (opsional, bisa skip kalo project udah ada)
+        try {
+          await fetch("https://api.vercel.com/v9/projects", {
+            method: "POST",
+            headers: { 
+              "Authorization": `Bearer ${vercelToken}`, 
+              "Content-Type": "application/json" 
+            },
+            body: JSON.stringify({ name: siteName, framework: null })
+          });
+        } catch (projectErr) {
+          console.log("Project mungkin sudah ada, lanjut deploy...");
+        }
 
-const projectData = await projectRes.json();
+        // 2. BACA FILE DAN UPLOAD
+        const htmlText = await file.text();
+        
+        // 3. CREATE DEPLOYMENT
+        const deployRes = await fetch("https://api.vercel.com/v13/deployments", {
+          method: "POST",
+          headers: { 
+            "Authorization": `Bearer ${vercelToken}`, 
+            "Content-Type": "application/json" 
+          },
+          body: JSON.stringify({
+            name: siteName, 
+            target: "production",
+            files: [{ file: "index.html", data: htmlText }],
+            projectSettings: { framework: null }
+          })
+        });
 
-if (!projectData.id && !projectData.name) {
-  throw new Error(projectData.error?.message || "Create project gagal");
-}
-
-const htmlText = await file.text();
-
-const deployRes = await fetch("https://api.vercel.com/v13/deployments", {
-  method: "POST",
-  headers: {
-    "Authorization": `Bearer ${vercelToken}`,
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    name: siteName,
-    target: "production",
-    files: [
-      {
-        file: "index.html",
-        data: htmlText
-      }
-    ]
-  })
-});
-
-const deployData = await deployRes.json();
-
-if (!deployData.url) {
-  throw new Error(deployData.error?.message || "Deploy gagal");
-}
-
-const finalUrl = "https://" + deployData.url;
+        const deployData = await deployRes.json();
+        
+        if (deployData.error) {
+          throw new Error(deployData.error.message || "Error dari Vercel");
+        }
+        
+        if (deployData.url || deployData.id) {
+            const finalUrl = deployData.url ? `https://${deployData.url}` : `https://${siteName}.vercel.app`;
             btn.innerHTML = `SUKSES! 🎉`; 
             btn.style.background = "var(--success-color)";
             saveHistoryToStorage(siteName, finalUrl);
@@ -406,10 +415,11 @@ const finalUrl = "https://" + deployData.url;
             document.getElementById('resDate').innerText = `${now.toLocaleDateString('id-ID')} • ${now.toLocaleTimeString('id-ID')}`;
             document.getElementById('deployInfoBox').classList.add('show');
         } else {
-            throw new Error(deployData.error ? deployData.error.message : "Error");
+            throw new Error("Respon tidak dikenal dari Vercel");
         }
       } catch (err) {
-        alert('Gagal: ' + err.message);
+        console.error("Deploy Error:", err);
+        alert('❌ Gagal: ' + err.message);
         btn.innerHTML = originalBtnText;
         btn.disabled = false;
       }
@@ -419,4 +429,4 @@ const finalUrl = "https://" + deployData.url;
     loadHistory();
   </script>
 </body>
-</html>
+                                                                           </html>
