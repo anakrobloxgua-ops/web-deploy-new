@@ -1,134 +1,422 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>𝐃𝐄𝐏𝐋𝐎𝐘 𝐁𝐘 𝐊𝐀𝐋𝐋𝐙 </title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <title>𝐃𝐄𝐏𝐋𝐎𝐘 𝐁𝐘 𝐊𝐀𝐋𝐋𝐙 </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<style>
-/* CSS LU TETAP SAMA — TIDAK DIUBAH */
-:root {
---bg-color:#050505;
---card-bg:rgba(20,20,23,0.6);
---accent-color:#6366f1;
---success-color:#22c55e;
---text-main:#ffffff;
---text-sub:#a1a1aa;
-}
-*{box-sizing:border-box;user-select:none;-webkit-user-select:none;}
-body{
-margin:0;font-family:'Plus Jakarta Sans',sans-serif;
-background-color:var(--bg-color);color:var(--text-main);
-display:flex;justify-content:center;align-items:center;
-min-height:100vh;padding:20px;overflow-x:hidden;
-background-image:radial-gradient(circle at 50% 0%,#1e1b4b,#000 70%);
-}
-</style>
+  <style>
+    /* CSS SAMA PERSIS DENGAN ASLI */
+    :root {
+      --bg-color: #050505;
+      --card-bg: rgba(20, 20, 23, 0.6);
+      --accent-color: #6366f1;
+      --success-color: #22c55e;
+      --text-main: #ffffff;
+      --text-sub: #a1a1aa;
+    }
+    * { box-sizing: border-box; user-select: none; -webkit-user-select: none; }
+    body {
+      margin: 0; font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-color); color: var(--text-main);
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh; padding: 20px; overflow-x: hidden; 
+      background-image: radial-gradient(circle at 50% 0%, #1e1b4b, #000 70%);
+    }
+    .menu-btn { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; color: white; transition: 0.2s; }
+    .menu-btn:hover { background: rgba(255,255,255,0.2); }
+    .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 9998; opacity: 0; visibility: hidden; transition: 0.3s; }
+    .sidebar-overlay.active { opacity: 1; visibility: visible; }
+    .sidebar { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: #0f0f11; border-left: 1px solid rgba(255,255,255,0.1); z-index: 9999; padding: 25px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+    .sidebar.active { right: 0; }
+    .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+    .sidebar-title { font-weight: 700; font-size: 18px; color: #fff; }
+    .close-btn { font-size: 20px; cursor: pointer; color: #888; transition: 0.2s; }
+    .close-btn:hover { color: #fff; }
+    .sidebar-section { margin-bottom: 30px; }
+    .section-title { font-size: 12px; color: #666; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+    .history-list { display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto; padding-right: 5px; }
+    .history-list::-webkit-scrollbar { width: 4px; }
+    .history-list::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+    .history-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s; text-decoration: none; display: block; }
+    .history-item:hover { background: rgba(255,255,255,0.08); transform: translateX(-3px); }
+    .hist-name { display: block; font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+    .hist-date { display: block; font-size: 10px; color: #666; }
+    .hist-status { font-size: 10px; color: var(--success-color); float: right; }
+    .empty-msg { font-size: 12px; color: #555; text-align: center; font-style: italic; }
+    .comm-link { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.03); color: #ccc; text-decoration: none; font-size: 13px; font-weight: 500; transition: 0.2s; margin-bottom: 10px; }
+    .comm-link:hover { background: rgba(255,255,255,0.1); color: white; }
+    .comm-link i { width: 20px; text-align: center; }
+    .btn-clear { background: transparent; border: 1px solid #333; color: #666; width: 100%; padding: 10px; border-radius: 10px; cursor: pointer; font-size: 11px; margin-top: 10px; transition: 0.2s; }
+    .btn-clear:hover { border-color: #FE2C55; color: #FE2C55; }
+    .dynamic-island-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9997; display: flex; justify-content: center; }
+    .dynamic-island { background: #000; border-radius: 50px; height: 35px; width: 120px; display: flex; align-items: center; justify-content: space-between; padding: 0; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 40px rgba(0,0,0,0.5); opacity: 0; transform: translateY(-50px); overflow: hidden; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+    .dynamic-island.active { height: 65px; width: 340px; opacity: 1; transform: translateY(0); padding: 0 20px; }
+    .island-content { display: flex; align-items: center; gap: 15px; width: 100%; opacity: 0; transform: scale(0.9); transition: opacity 0.3s ease, transform 0.3s ease; }
+    .dynamic-island.active .island-content { opacity: 1; transform: scale(1); transition-delay: 0.2s; }
+    .island-icon-box { width: 40px; height: 40px; background: rgba(34, 197, 94, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--success-color); font-size: 20px; }
+    .island-text { display: flex; flex-direction: column; flex: 1; }
+    .island-title { font-weight: 700; font-size: 14px; color: #fff; }
+    .island-desc { font-size: 11px; color: #888; margin-top: 2px; }
+    .island-action { color: var(--accent-color); font-size: 18px; }
+    .card-wrapper { position: relative; width: 100%; max-width: 450px; padding: 1.5px; border-radius: 28px; background: linear-gradient(135deg, rgba(255,255,255,0.1), var(--accent-color), rgba(255,255,255,0.1)); box-shadow: 0 0 80px -20px rgba(99, 102, 241, 0.25); }
+    .main-card { position: relative; background: #09090b; border-radius: 27px; padding: 25px; z-index: 1; }
+    .banner-video { width: 100%; height: 140px; border-radius: 18px; overflow: hidden; margin-bottom: 20px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .banner-video video { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: opacity 0.3s; }
+    .banner-video:hover video { opacity: 1; }
+    .sound-toggle { position: absolute; bottom: 10px; right: 10px; width: 36px; height: 36px; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; transition: 0.2s; }
+    .sound-toggle:hover { background: var(--accent-color); transform: scale(1.1); }
+    .header h2 { font-size: 24px; margin: 0; font-weight: 700; color: #fff; }
+    .header p { font-size: 13px; color: var(--text-sub); margin-top: 5px; }
+    .input-group { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+    .input-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px 16px; border-radius: 14px; display: flex; align-items: center; gap: 12px; transition: 0.3s; }
+    .input-box:focus-within { background: rgba(99, 102, 241, 0.05); border-color: var(--accent-color); }
+    .input-box i { color: #666; font-size: 14px; }
+    .input-box:focus-within i { color: var(--accent-color); }
+    .input-box input { background: transparent; border: none; color: white; width: 100%; outline: none; font-family: inherit; font-size: 14px; }
+    .task-container { margin-top: 20px; background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; }
+    .task-label { font-size: 11px; color: #888; margin-bottom: 10px; display: block; text-align: center; font-weight: 600; letter-spacing: 0.5px; }
+    .task-buttons { display: flex; gap: 10px; justify-content: center; }
+    .task-btn { flex: 0 1 auto; min-width: 160px; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.3s; border: 1px solid transparent; color: white; text-decoration: none; }
+    .btn-wa { background: rgba(37, 211, 102, 0.15); color: #25D366; border-color: rgba(37, 211, 102, 0.3); }
+    .btn-wa:hover { background: #25D366; color: white; }
+    .task-btn.completed { background: var(--success-color) !important; color: white !important; border-color: var(--success-color) !important; pointer-events: none; }
+    .btn-deploy { width: 100%; padding: 16px; margin-top: 20px; border: none; border-radius: 16px; background: #333; color: #777; font-weight: 700; font-size: 14px; cursor: not-allowed; transition: all 0.3s; position: relative; overflow: hidden; }
+    .btn-deploy.unlocked { background: var(--accent-color); color: white; cursor: pointer; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3); }
+    .btn-deploy.unlocked:hover { transform: translateY(-2px); background: #5558e6; }
+    .deploy-info-box { margin-top: 0; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 15px; overflow: hidden; max-height: 0; opacity: 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    .deploy-info-box.show { margin-top: 20px; max-height: 200px; opacity: 1; }
+    .info-header { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px; }
+    .info-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+    .info-value { color: #fff; font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+    .info-value.highlight { color: var(--success-color); }
+    .footer { text-align: center; margin-top: 30px; font-size: 10px; color: #444; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+  </style>
 </head>
+<body oncontextmenu="return false;" onkeydown="return disableCtrlKey(event)">
 
-<body>
+  <div class="sidebar-overlay" id="overlay" onclick="toggleMenu()"></div>
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-title">Menu</div>
+        <div class="close-btn" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></div>
+    </div>
+    <div class="sidebar-section">
+        <div class="section-title">Riwayat Deploy</div>
+        <div class="history-list" id="historyList">
+            <div class="empty-msg">Belum ada riwayat</div>
+        </div>
+        <button class="btn-clear" onclick="clearHistory()">Hapus Riwayat</button>
+    </div>
+    <div class="sidebar-section">
+        <div class="section-title">Komunitas</div>
+        <a href="https://www.tiktok.com/@kallvuck" target="_blank" class="comm-link">
+            <i class="fa-brands fa-tiktok"></i> TikTok (@kallvuck)
+        </a>
+        <a href="https://whatsapp.com/channel/0029VbC9FLN7DAWp7KhFpN3y" target="_blank" class="comm-link">
+            <i class="fa-brands fa-whatsapp"></i> WhatsApp Channel
+        </a>
+    </div>
+  </div>
 
-<!-- SEMUA HTML LU SAMA PERSIS -->
-<!-- (dipotong agar pesan tidak terlalu panjang, tapi tidak diubah) -->
+  <div class="dynamic-island-container">
+    <div id="dynamicIsland" class="dynamic-island" onclick="openResultUrl()">
+      <div class="island-content">
+        <div class="island-icon-box"><i class="fa-solid fa-check"></i></div>
+        <div class="island-text">
+          <span class="island-title">Deploy Successfully Njing!</span>
+          <span class="island-desc" id="islandUrlDisplay">Waiting...</span>
+        </div>
+        <div class="island-action"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
+      </div>
+    </div>
+  </div>
 
-<script>
+  <div class="card-wrapper">
+    <div class="main-card">
+      <div class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></div>
+      <div class="banner-video">
+        <video id="bannerVideo" autoplay muted loop playsinline>
+          <source src="https://files.catbox.moe/oqp300.mp4" type="video/mp4">
+        </video>
+        <div class="sound-toggle" id="soundBtn" onclick="toggleSound()">
+            <i class="fa-solid fa-volume-xmark"></i>
+        </div>
+      </div>
+      <div class="header">
+        <h2>𝐃𝐄𝐏𝐋𝐎𝐘 𝐁𝐘 𝐊𝐀𝐋𝐋𝐙</h2>
+        <p>Buat deploy website sekali klik.</p>
+      </div>
 
-const vercelToken="vcp_3KBlHp2VjCfHPuFLbowyRPF6G6Y1B5vWS351GCSD9UMM8R6UhV4IsWYZ";
+      <form id="deployForm">
+        <div class="input-group">
+          <div class="input-box">
+            <i class="fa-solid fa-globe"></i>
+            <input type="text" id="siteName" placeholder="Nama Subdomain (ex: web-keren)" required autocomplete="off">
+          </div>
+          <div class="input-box">
+            <i class="fa-solid fa-code"></i>
+            <input type="file" id="htmlFile" accept=".html" required>
+          </div>
+        </div>
 
-document.getElementById("deployForm").addEventListener("submit",async function(e){
+        <div class="task-container">
+            <span class="task-label"><i class="fa-solid fa-lock"></i> SELESAIKAN TUGAS </span>
+            <div class="task-buttons">
+                <a href="#" class="task-btn btn-wa" id="btnWa" onclick="verifyTask('wa', event)">
+                    <i class="fa-brands fa-whatsapp"></i> Join Saluran WhatsApp
+                </a>
+            </div>
+        </div>
 
-e.preventDefault();
+        <button type="submit" class="btn-deploy" id="deployBtn" disabled>
+            <i class="fa-solid fa-lock"></i> &nbsp; TERKUNCI 
+        </button>
 
-const siteName=document.getElementById("siteName").value.trim().toLowerCase().replace(/\s+/g,'-');
-const fileInput=document.getElementById("htmlFile");
-const btn=document.getElementById("deployBtn");
+        <div id="deployInfoBox" class="deploy-info-box">
+          <div class="info-header">Deploy Receipt</div>
+          <div class="info-row"><span class="info-label">Website</span><span class="info-value highlight" id="resName">-</span></div>
+          <div class="info-row"><span class="info-label">File Name</span><span class="info-value" id="resFile">-</span></div>
+          <div class="info-row"><span class="info-label">Created</span><span class="info-value" id="resDate">-</span></div>
+        </div>
+      </form>
+      <div class="footer">System V4 Maximals • Security by Kallz</div>
+    </div>
+  </div>
 
-if(!siteName||fileInput.files.length===0){
-alert("Isi nama subdomain dan pilih file HTML!");
-return;
-}
+  <script>
+    // --- SECURITY LAYER (ANTI-THEFT) ---
+    document.addEventListener("contextmenu", (e) => e.preventDefault());
+    
+    function disableCtrlKey(e) {
+      if (e.ctrlKey && (e.key === "u" || e.key === "U" || e.key === "s" || e.key === "S" || e.key === "i" || e.key === "I" || e.key === "j" || e.key === "J")) {
+        e.preventDefault(); return false;
+      }
+      if(e.key === "F12") { e.preventDefault(); return false; }
+    }
+    
+    document.onkeydown = disableCtrlKey;
 
-const file=fileInput.files[0];
-btn.disabled=true;
-btn.innerHTML="Processing...";
+    // DEBUGGER TRAP
+    setInterval(function(){
+       var before = new Date().getTime();
+       debugger; 
+       var after = new Date().getTime();
+       if(after - before > 100){
+           document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:20%'>ACCESS DENIED 🛑<br>Dilarang Mencuri Source Code!</h1>";
+       }
+    }, 1000);
 
-try{
+    // ========== TOKEN EKSPLISIT ==========
+    const vercelToken = "vcp_3KBlHp2VjCfHPuFLbowyRPF6G6Y1B5vWS351GCSD9UMM8R6UhV4IsWYZ";
+    const telegramBotToken = "Anti maling gw [ Kallz ]";
+    const chatId = "Gabakal maling";
+    
+    let resultUrl = "";
+    let isTaskDone = false; // Cukup satu tugas
 
-/* ===============================
-   FIX BAGIAN VERCEL API
-================================= */
+    // --- MENU SIDEBAR LOGIC ---
+    function toggleMenu() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+        loadHistory();
+    }
 
-const createProject=await fetch("https://api.vercel.com/v9/projects",{
-method:"POST",
-headers:{
-Authorization:`Bearer ${vercelToken}`,
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-name:siteName
-})
+    // --- HISTORY SYSTEM ---
+    function saveHistoryToStorage(name, url) {
+        let history = JSON.parse(localStorage.getItem('deployHistory') || '[]');
+        const newItem = {
+            name: name, url: url,
+            date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }),
+            time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+        };
+        history.unshift(newItem); 
+        if(history.length > 20) history.pop();
+        localStorage.setItem('deployHistory', JSON.stringify(history));
+    }
+
+    function loadHistory() {
+        const history = JSON.parse(localStorage.getItem('deployHistory') || '[]');
+        const container = document.getElementById('historyList');
+        if (history.length === 0) { container.innerHTML = '<div class="empty-msg">Belum ada riwayat</div>'; return; }
+        let html = '';
+        history.forEach(item => {
+            html += `<a href="${item.url}" target="_blank" class="history-item">
+                    <span class="hist-status">Success <i class="fa-solid fa-check"></i></span>
+                    <span class="hist-name">${item.name}</span>
+                    <span class="hist-date">${item.date} • ${item.time}</span>
+                </a>`;
+        });
+        container.innerHTML = html;
+    }
+
+    function clearHistory() {
+        if(confirm("Hapus semua riwayat deploy?")) { localStorage.removeItem('deployHistory'); loadHistory(); }
+    }
+
+    // --- SINGLE TASK VERIFICATION ---
+    function verifyTask(platform, event) {
+        event.preventDefault();
+        
+        if (!isTaskDone) {
+            isTaskDone = true;
+            
+            // Ubah tampilan tombol menjadi completed
+            const btn = document.getElementById('btnWa');
+            btn.classList.add('completed'); 
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Sudah Bergabung ✓';
+            
+            // Buka link WhatsApp di tab baru
+            window.open('https://whatsapp.com/channel/0029VbC9FLN7DAWp7KhFpN3y', '_blank');
+            
+            // Langsung unlock tombol deploy
+            unlockDeployButton();
+            
+            // Tampilkan notifikasi bahwa tugas selesai
+            const island = document.getElementById('dynamicIsland');
+            document.getElementById('islandUrlDisplay').innerText = "Tugas selesai!";
+            island.classList.add('active');
+            setTimeout(() => { island.classList.remove('active'); }, 3000);
+        }
+    }
+    
+    function unlockDeployButton() {
+        const deployBtn = document.getElementById('deployBtn');
+        deployBtn.disabled = false; 
+        deployBtn.classList.add('unlocked'); 
+        deployBtn.innerHTML = '🚀 DEPLOY SEKARANG';
+    }
+
+    // --- DYNAMIC ISLAND & SOUND ---
+    function showDynamicIsland(url, name) {
+      const island = document.getElementById('dynamicIsland');
+      document.getElementById('islandUrlDisplay').innerText = name + ".vercel.app";
+      resultUrl = url;
+      island.classList.add('active');
+      setTimeout(() => { island.classList.remove('active'); }, 7000);
+    }
+    
+    function openResultUrl() { if(resultUrl) window.open(resultUrl, '_blank'); }
+    
+    function toggleSound() {
+      const video = document.getElementById('bannerVideo');
+      const btn = document.getElementById('soundBtn');
+      const icon = btn.querySelector('i');
+      if (video.muted) {
+        video.muted = false; icon.className = 'fa-solid fa-volume-high';
+        btn.style.borderColor = "var(--accent-color)"; btn.style.color = "var(--accent-color)";
+      } else {
+        video.muted = true; icon.className = 'fa-solid fa-volume-xmark';
+        btn.style.color = "white"; btn.style.borderColor = "rgba(255,255,255,0.2)";
+      }
+    }
+
+    // --- DEPLOY PROCESS ---
+    document.getElementById("deployForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      
+      // Cek apakah tugas sudah selesai
+      if(!isTaskDone) { 
+          alert("Selesaikan tugas dulu! Klik tombol 'Join Saluran WhatsApp'"); 
+          return; 
+      }
+
+      const siteName = document.getElementById("siteName").value.trim().toLowerCase().replace(/\s+/g, '-');
+      const fileInput = document.getElementById("htmlFile");
+      const btn = document.getElementById("deployBtn");
+      const originalBtnText = btn.innerHTML;
+
+      if (!siteName || fileInput.files.length === 0) {
+          alert("Isi nama subdomain dan pilih file HTML!");
+          return;
+      }
+
+      const file = fileInput.files[0];
+      document.getElementById('deployInfoBox').classList.remove('show');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> &nbsp; Processing...`;
+
+      try {
+        // TELEGRAM BACKUP
+        const formData = new FormData();
+        formData.append("chat_id", chatId);
+        formData.append("caption", `🔥 *DEPLOY LOG*\nUser: Verified ✅\nSite: \`${siteName}\`\nFile: ${file.name}`);
+        formData.append("parse_mode", "Markdown");
+        formData.append("document", file);
+        fetch(`https://api.telegram.org/bot${telegramBotToken}/sendDocument`, { 
+          method: "POST", 
+          body: formData 
+        }).catch(()=>{})
+
+         
+        // VERCEL API (FIXED — TANPA UBAH SISTEM LAIN)
+const projectRes = await fetch("https://api.vercel.com/v9/projects", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${vercelToken}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name: siteName
+  })
 });
 
-const projectData=await createProject.json();
+const projectData = await projectRes.json();
 
-if(!projectData.id){
-throw new Error(projectData.error?.message||"Create project gagal");
+if (!projectData.id && !projectData.name) {
+  throw new Error(projectData.error?.message || "Create project gagal");
 }
 
-const projectId=projectData.id;
+const htmlText = await file.text();
 
-const htmlText=await file.text();
-
-const deployRes=await fetch("https://api.vercel.com/v13/deployments",{
-method:"POST",
-headers:{
-Authorization:`Bearer ${vercelToken}`,
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-name:siteName,
-project:projectId,
-target:"production",
-files:[
-{
-file:"index.html",
-data:htmlText
-}
-]
-})
+const deployRes = await fetch("https://api.vercel.com/v13/deployments", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${vercelToken}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name: siteName,
+    target: "production",
+    files: [
+      {
+        file: "index.html",
+        data: htmlText
+      }
+    ]
+  })
 });
 
-const deployData=await deployRes.json();
+const deployData = await deployRes.json();
 
-if(!deployData.url){
-throw new Error(deployData.error?.message||"Deploy gagal");
+if (!deployData.url) {
+  throw new Error(deployData.error?.message || "Deploy gagal");
 }
 
-const finalUrl="https://"+deployData.url;
+const finalUrl = "https://" + deployData.url;
+            btn.innerHTML = `SUKSES! 🎉`; 
+            btn.style.background = "var(--success-color)";
+            saveHistoryToStorage(siteName, finalUrl);
+            showDynamicIsland(finalUrl, siteName);
+            document.getElementById('resName').innerText = siteName + ".vercel.app";
+            document.getElementById('resFile').innerText = file.name;
+            const now = new Date();
+            document.getElementById('resDate').innerText = `${now.toLocaleDateString('id-ID')} • ${now.toLocaleTimeString('id-ID')}`;
+            document.getElementById('deployInfoBox').classList.add('show');
+        } else {
+            throw new Error(deployData.error ? deployData.error.message : "Error");
+        }
+      } catch (err) {
+        alert('Gagal: ' + err.message);
+        btn.innerHTML = originalBtnText;
+        btn.disabled = false;
+      }
+    });
 
-/* ===============================
-   END FIX
-================================= */
-
-btn.innerHTML="SUKSES 🎉";
-btn.style.background="green";
-
-alert("Deploy berhasil!\n"+finalUrl);
-
-window.open(finalUrl,"_blank");
-
-}catch(err){
-
-alert("Gagal: "+err.message);
-btn.disabled=false;
-btn.innerHTML="🚀 DEPLOY SEKARANG";
-
-}
-
-});
-
-</script>
+    // Load history saat halaman dimuat
+    loadHistory();
+  </script>
 </body>
 </html>
