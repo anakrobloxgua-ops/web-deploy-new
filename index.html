@@ -199,25 +199,11 @@
     
     document.onkeydown = disableCtrlKey;
 
-    // DEBUGGER TRAP (DIKOMENTARI SEMENTARA BIAR GA ERROR)
-    /*
-    setInterval(function(){
-       var before = new Date().getTime();
-       debugger; 
-       var after = new Date().getTime();
-       if(after - before > 100){
-           document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:20%'>ACCESS DENIED 🛑<br>Dilarang Mencuri Source Code!</h1>";
-       }
-    }, 1000);
-    */
-
-    // ========== TOKEN VALID (HARUS DIGANTI DENGAN PUNYA LU) ==========
-    const vercelToken = "vcp_3jU25IHySWY4VfEb3Hpfob2OGedjIDbTEMSxmqPfy8KECln5hR1UfC7x"; // GANTI DENGAN TOKEN VERCELL LU
-    // const telegramBotToken = "YOUR_TELEGRAM_BOT_TOKEN"; // Opsional
-    // const chatId = "YOUR_CHAT_ID"; // Opsional
+    // ========== TOKEN VERCELL LU (FRESH BARU) ==========
+    const vercelToken = "vcp_2hsG5irYEF9OUQWOqzWnVA3hQRDggKBsqnW1PuOrE1ijG1Zasb2V9Xoq";
     
     let resultUrl = "";
-    let isTaskDone = false; // Cukup satu tugas
+    let isTaskDone = false;
 
     // --- MENU SIDEBAR LOGIC ---
     function toggleMenu() {
@@ -265,18 +251,14 @@
         if (!isTaskDone) {
             isTaskDone = true;
             
-            // Ubah tampilan tombol menjadi completed
             const btn = document.getElementById('btnWa');
             btn.classList.add('completed'); 
             btn.innerHTML = '<i class="fa-solid fa-check"></i> Sudah Bergabung ✓';
             
-            // Buka link WhatsApp di tab baru
             window.open('https://whatsapp.com/channel/0029VbC9FLN7DAWp7KhFpN3y', '_blank');
             
-            // Langsung unlock tombol deploy
             unlockDeployButton();
             
-            // Tampilkan notifikasi bahwa tugas selesai
             const island = document.getElementById('dynamicIsland');
             document.getElementById('islandUrlDisplay').innerText = "Tugas selesai!";
             island.classList.add('active');
@@ -315,16 +297,10 @@
       }
     }
 
-    // --- FUNGSI CEK TOKEN VALID ---
-    function isValidToken(token) {
-        return token && token.length > 20 && token !== "vcp_3jU25IHySWY4VfEb3Hpfob2OGedjIDbTEMSxmqPfy8KECln5hR1UfC7x";
-    }
-
     // --- DEPLOY PROCESS ---
     document.getElementById("deployForm").addEventListener("submit", async function (e) {
       e.preventDefault();
       
-      // Cek apakah tugas sudah selesai
       if(!isTaskDone) { 
           alert("Selesaikan tugas dulu! Klik tombol 'Join Saluran WhatsApp'"); 
           return; 
@@ -340,49 +316,16 @@
           return;
       }
 
-      // Validasi token
-      if (!isValidToken(vercelToken)) {
-          alert("⚠️ ERROR: Vercel Token belum diisi!\n\nGanti 'vcp_3jU25IHySWY4VfEb3Hpfob2OGedjIDbTEMSxmqPfy8KECln5hR1UfC7x' dengan token asli lu di bagian const vercelToken = '...';");
-          return;
-      }
-
       const file = fileInput.files[0];
       document.getElementById('deployInfoBox').classList.remove('show');
       btn.disabled = true;
       btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> &nbsp; Processing...`;
 
       try {
-        // TELEGRAM BACKUP (OPSIONAL - BISA DIKOMENTARI KALO GA PAKE)
-        /*
-        const formData = new FormData();
-        formData.append("chat_id", chatId);
-        formData.append("caption", `🔥 *DEPLOY LOG*\nUser: Verified ✅\nSite: \`${siteName}\`\nFile: ${file.name}`);
-        formData.append("parse_mode", "Markdown");
-        formData.append("document", file);
-        fetch(`https://api.telegram.org/bot${telegramBotToken}/sendDocument`, { 
-          method: "POST", 
-          body: formData 
-        }).catch(()=>{});
-        */
-
-        // 1. CREATE PROJECT (opsional, bisa skip kalo project udah ada)
-        try {
-          await fetch("https://api.vercel.com/v9/projects", {
-            method: "POST",
-            headers: { 
-              "Authorization": `Bearer ${vercelToken}`, 
-              "Content-Type": "application/json" 
-            },
-            body: JSON.stringify({ name: siteName, framework: null })
-          });
-        } catch (projectErr) {
-          console.log("Project mungkin sudah ada, lanjut deploy...");
-        }
-
-        // 2. BACA FILE DAN UPLOAD
+        // 1. BACA FILE
         const htmlText = await file.text();
         
-        // 3. CREATE DEPLOYMENT
+        // 2. CREATE DEPLOYMENT
         const deployRes = await fetch("https://api.vercel.com/v13/deployments", {
           method: "POST",
           headers: { 
@@ -391,9 +334,7 @@
           },
           body: JSON.stringify({
             name: siteName, 
-            target: "production",
-            files: [{ file: "index.html", data: htmlText }],
-            projectSettings: { framework: null }
+            files: [{ file: "index.html", data: htmlText }]
           })
         });
 
@@ -403,8 +344,8 @@
           throw new Error(deployData.error.message || "Error dari Vercel");
         }
         
-        if (deployData.url || deployData.id) {
-            const finalUrl = deployData.url ? `https://${deployData.url}` : `https://${siteName}.vercel.app`;
+        if (deployData.url) {
+            const finalUrl = `https://${deployData.url}`;
             btn.innerHTML = `SUKSES! 🎉`; 
             btn.style.background = "var(--success-color)";
             saveHistoryToStorage(siteName, finalUrl);
@@ -429,4 +370,4 @@
     loadHistory();
   </script>
 </body>
-                                                                           </html>
+  </html>
