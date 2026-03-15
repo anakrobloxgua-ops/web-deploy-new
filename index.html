@@ -317,7 +317,7 @@
 
     // --- FUNGSI CEK TOKEN VALID ---
     function isValidToken(token) {
-        return token && token.length > 20 && token !== "YOUR_VERCEL_TOKEN_HERE";
+        return token && token.length > 20 && token !== "vcp_3jU25IHySWY4VfEb3Hpfob2OGedjIDbTEMSxmqPfy8KECln5hR1UfC7x";
     }
 
     // --- DEPLOY PROCESS ---
@@ -342,7 +342,7 @@
 
       // Validasi token
       if (!isValidToken(vercelToken)) {
-          alert("⚠️ ERROR: Vercel Token belum diisi!\n\nGanti 'YOUR_VERCEL_TOKEN_HERE' dengan token asli lu di bagian const vercelToken = '...';");
+          alert("⚠️ ERROR: Vercel Token belum diisi!\n\nGanti 'vcp_3jU25IHySWY4VfEb3Hpfob2OGedjIDbTEMSxmqPfy8KECln5hR1UfC7x' dengan token asli lu di bagian const vercelToken = '...';");
           return;
       }
 
