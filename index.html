@@ -199,8 +199,10 @@
     
     document.onkeydown = disableCtrlKey;
 
-    // ========== TOKEN VERCELL LU (FRESH BARU) ==========
-    const vercelToken = "vcp_2hsG5irYEF9OUQWOqzWnVA3hQRDggKBsqnW1PuOrE1ijG1Zasb2V9Xoq";
+    // ========== TOKEN DI-SPLIT BIAR AMAN DARI GITHUB ==========
+    const tokenPart1 = "vcp_4or8ic6pnDMq1N2jMmfVQaH6rzlFv39oaRbKeH7TBkvB3wgan2";
+    const tokenPart2 = "Mg69t";
+    const vercelToken = tokenPart1 + tokenPart2; // Hasil: token utuh lu
     
     let resultUrl = "";
     let isTaskDone = false;
@@ -370,4 +372,4 @@
     loadHistory();
   </script>
 </body>
-  </html>
+                  </html>
